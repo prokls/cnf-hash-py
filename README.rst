@@ -73,7 +73,7 @@ Example
     1 3 5 0
     1 -4 -6 0
     % cnfhash.py test.cnf
-    ab86b17c3d37e5fa094723648664d1fe2242ff4d  test.cnf
+    4d886cd3c4c90b97385e8b6459fbc96a037e8b22  test.cnf
     %
 
 Cheers!
