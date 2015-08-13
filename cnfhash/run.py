@@ -50,6 +50,10 @@ def main():
 
     args = parser.parse_args()
     log = logging.getLogger('cnfhash')
+    logging.basicConfig(
+        format='%(name)s.%(levelname) 5s - %(message)s',
+        level=logging.NOTSET
+    )
     log.setLevel(getattr(logging, args.loglevel.upper()))
 
     return run(args, log)
