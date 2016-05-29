@@ -8,14 +8,14 @@ cnfhash-python3
 
 A python3 implementation to hash DIMACS CNF files.
 See `the technical report <http://lukas-prokop.at/proj/megosat/downloads/cnf-hash-1.0.0.pdf>`_ for more details.
-This implementation was pushed to `Python Package Index PyPI <https://pypi.python.org/pypi/cnf-hash>`_.
+This implementation was pushed to `Python Package Index PyPI <https://pypi.python.org/pypi/cnfhash>`_.
 
 How to use
 ----------
 
 To install use pip3::
 
-    pip3 install cnf-hash
+    pip3 install cnfhash
 
 Then you can use the following API in python3::
 
