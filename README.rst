@@ -1,5 +1,5 @@
-cnfhash-python3
-===============
+cnf-hash-py
+===========
 
 :author:        Lukas Prokop
 :date:          August 2015, May 2016
