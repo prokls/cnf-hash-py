@@ -86,7 +86,7 @@ Formal specification
 A valid DIMACS file is read in and a SHA1 instance is fed with bytes:
 
 1. The first four values are dropped.
-2. Lits are treaded as integers without leading zeros. Integers are submitted as base 10 ASCII digits with an optional leading sign to the SHA1 instance.
+2. Lits are treated as integers without leading zeros. Integers are submitted as base 10 ASCII digits with an optional leading sign to the SHA1 instance.
 3. Clause terminators are submitted as zero character followed by a newline character to the SHA1 instance.
 
 Performance and memory
