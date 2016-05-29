@@ -11,16 +11,16 @@
     'testsuite' is taken.
 
     'testsuite' is a folder with CNF files with their hash value
-    in their name like `cnfhash-test <https://github.com/prokls/cnfhash-tests>`_.
+    in their name like `cnf-hash-test <https://github.com/prokls/cnf-hash-tests>`_.
 
-    (C) Lukas Prokop, 2015, Public Domain
+    (C) Lukas Prokop, 2016, Public Domain
 """
 
 import sys
 import os.path
 import unittest
 
-import cnfhash.dimacs
+import cnfhash
 
 
 class CnfHashingTestsuite(unittest.TestCase):
@@ -29,16 +29,23 @@ class CnfHashingTestsuite(unittest.TestCase):
         testsuite = dict(os.environ).get('TESTSUITE', testsuite)
 
         for filename in os.listdir(testsuite):
+            if not filename.endswith('.cnf'):
+                continue
             if os.path.isdir(os.path.join(testsuite, filename)):
                 continue
 
             filepath = os.path.join(testsuite, filename)
             hashvalue = filename.split('_')[0]
 
-            with open(filepath) as fp:
-                comp_hashvalue = cnfhash.dimacs.read_dimacs_file(fp)
+            with open(filepath, 'rb') as fd:
+                try:
+                    comp_hashvalue = cnfhash.hash_dimacs(fd)
+                    assert comp_hashvalue[0:5] == 'cnf1$'
+                except Exception as e:
+                    print('Failure while processing testcase {}'.format(filepath), file=sys.stderr)
+                    raise e
 
-            self.assertEqual(hashvalue, comp_hashvalue, filename[len(hashvalue) + 1:])
+            self.assertEqual(hashvalue, comp_hashvalue[5:], filename[len(hashvalue) + 1:])
 
 
 if __name__ == '__main__':
