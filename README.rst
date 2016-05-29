@@ -64,7 +64,7 @@ A DIMACS file is valid iff
    6. The remaining zero integers are called *clause terminators*.
 
 3. A DIMACS file must be terminated by a clause terminator.
-4. Every literal must satisfy ``-nbvars ≤ literal ≤ nbvars``.
+4. Every lit must satisfy ``-nbvars ≤ lit ≤ nbvars``.
 5. The number of clause terminators must equate nbclauses.
 
 ============== =========================================
