@@ -21,7 +21,7 @@ def readfile(fname):
 setup(
     name='cnfhash',
     version='1.0.0',
-    url='http://lukas-prokop.at/proj/cnfhash/',
+    url='http://lukas-prokop.at/proj/cnf-hash/',
     license='Public Domain',
     author='Lukas Prokop',
     author_email='admin@lukas-prokop.at',
@@ -38,10 +38,11 @@ setup(
         'License :: Public Domain',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering'
     ],
     entry_points = {
-        "console_scripts": ['cnfhash-py = cnfhash.run:main']
+        "console_scripts": ['cnf-hash-py = cnfhash.run:main']
     }
 )

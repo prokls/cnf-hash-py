@@ -2,31 +2,77 @@ cnfhash-python3
 ===============
 
 :author:        Lukas Prokop
-:date:          August 2015
+:date:          August 2015, May 2016
 :version:       1.0.0
-:license:       Public Domain
+:license:       CC-0
 
-A python3 implementation to hash CNF/DIMACS files.
+A python3 implementation to hash DIMACS CNF files.
+See `the technical report <http://lukas-prokop.at/proj/megosat/downloads/cnf-hash-1.0.0.pdf>`_ for more details.
+This implementation was pushed to `Python Package Index PyPI <https://pypi.python.org/pypi/cnf-hash>`_.
+
+How to use
+----------
+
+To install use pip3::
+
+    pip3 install cnf-hash
+
+Then you can use the following API in python3::
+
+    import cnfhash
+
+    # reading blockwise from a DIMACS file
+
+    def read_blockwise(filepath):
+        with open(filepath) as fd:
+            yield fd.read(4096)
+
+    reader = read_blockwise('test.cnf')
+    print(cnfhash.hash_dimacs(reader))
+
+    # or use integers directly
+
+    print(cnfhash.hash_cnf([3, 2, 1, -3, 0, -1, 2, 0]))
+
+Testing the software
+--------------------
+
+Download `the testsuite <http://github.com/prokls/cnf-hash-tests1/>`_.
+Provide the folder location as environment variable::
+
+    export TESTSUITE="/home/prokls/Downloads/cnf-hash/tests1/"
+
+Then run all files in the ``tests`` directory::
+
+    python3 tests/test_testsuite.py
+
+The testsuite has been run successfully, if the exit code has always been 0.
 
 DIMACS file assumptions
 -----------------------
 
 A DIMACS file is valid iff
 
-1. it is encoded as ASCII file.
-2. *Comment lines* start with "c". Every character until the next newline is discarded. Comment lines can be inserted at any line position.
-3. *Header lines* start with "p cnf " followed by two whitespace-separated sequences of digits.
-4. All remaining lines, called *clause lines*, only contain whitespace-separated integers. Except within integers, whitespace can be inserted anywhere in clause lines.
-5. An integer is an optional sign followed by one nonzero digit and an arbitrary number of digits.
-6. Every clause line must be terminated with a whitespace followed by a zero and optionally following whitespace.
-7. Every clause line contains at least one integer besides the zero terminator.
+1. Any line starting with "c" or consisting only of whitespace is considered as *comment line* and content is not interpreted until the next newline character occurs.
+2. The remaining file is a sequence of whitespace separated values.
+
+   1. The first value is required to be "p"
+   2. The second value is required to be "cnf"
+   3. The third value is required to be a non-negative integer and called *nbvars*.
+   4. The fourth value is required to be a non-negative integer and called *nbclauses*.
+   5. The remaining non-zero integers are called *lits*.
+   6. The remaining zero integers are called *clause terminators*.
+
+3. A DIMACS file must be terminated by a clause terminator.
+4. Every literal must satisfy ``-nbvars ≤ literal ≤ nbvars``.
+5. The number of clause terminators must equate nbclauses.
 
 ============== =========================================
-**term**       **unicode mapping**
+**term**       **ASCII mapping**
 -------------- -----------------------------------------
 "c"            U+0063
 "p"            U+0070
-"p cnf "       U+0070 U+0020 U+0063 U+006E U+0066 U+0020
+"cnf"          U+0063 U+006E U+0066 U+0020
 sign           U+002D
 nonzero digit  U+0031 – U+0039
 digits         U+0030 – U+0039
@@ -39,25 +85,20 @@ Formal specification
 
 A valid DIMACS file is read in and a SHA1 instance is fed with bytes:
 
-1. The first digit sequence of the header line is written.
-2. A zero value is written.
-3. The second digit sequence of the header line is written.
-4. Two zero values are written.
-5. For every clause line
+1. The first four values are dropped.
+2. Lits are treaded as integers without leading zeros. Integers are submitted as base 10 ASCII digits with an optional leading sign to the SHA1 instance.
+3. Clause terminators are submitted as zero character followed by a newline character to the SHA1 instance.
 
-   1. For every digit sequence with optional sign, excluding the terminating zero
+Performance and memory
+----------------------
 
-      1. Write this signed integer
-      2. Write a zero value
+The DIMACS parser uses OS' page size as default block size.
+A few constant values and the python runtime is also stored in memory.
+So for a python program, this implementation is very memory-friendly.
 
-   2. Write a zero value
-
-All the mentioned values are encoded as byte sequence where the integer parameter is represented as signed big-endian 64bit value.
-If the value is negative, the two's complement has to be applied to retrieve the negative byte array representation of an absolute value.
-If the value exceeds 2^63-1 or underflows -2^63, the integer can be extended to the smallest possible signed big-endian representation such that the number of bytes is a multiple of 8.
-
-This implementation ensures that all valid DIMACS files are read correctly.
-It might parse more files and compute the corresponding hash value.
+The technical report shows that 45 DIMACS files summing up to 1~GB memory
+can be read in 2989~seconds. In terms of performance, the equivalent `Go
+implementation <http://github.com/prokls/cnf-hash-go/>`_ is recommended.
 
 Example
 -------
@@ -71,9 +112,10 @@ Example
     1 -2 0
     -1 2 0
     1 3 5 0
-    1 -4 -6 0
-    % cnfhash.py test.cnf
-    4d886cd3c4c90b97385e8b6459fbc96a037e8b22  test.cnf
+    1 -4 -5 0
+    % cnf-hash-py test.cnf
+    cnf-hash-py 1.0.0 2016-05-29T12:27:13.991260 /root
+    cnf1$7ca8bbcc091459201571acc083fbde4f7b1fcc94  test.cnf
     %
 
 Cheers!

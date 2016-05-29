@@ -1,59 +1,78 @@
 #!/usr/bin/env python3
 
 """
-    cnfhash.py
-    ==========
+    run.py
+    ======
 
     Script for executable module.
 
     Compute a hash value for the given DIMACS file.
-    Requires Python >=3.2 for ``int.to_bytes``
 
-    * Considers the two header values
-    * Ignores comments
+    * Ignores comments 'c' and '%' lines
     * Order of clauses matters
-    * Order of literals matter [0]_
-    * A more formal specification is provided with the `Go implementation`_.
+    * Order of literals matters
 
-    .. [0]: Difficult decision, but we decided in favor of it
-    .. _Go implementation: https://github.com/prokls/cnfhash-go
+    A more formal specification is provided at
+    `cnfhash project homepage <http://lukas-prokop.at/proj/cnfhash/>`_.
 
-    (C) Lukas Prokop, 2015, Public Domain
+    (C) Lukas Prokop, 2016, Public Domain
 """
 
-import logging
+import gzip
 import os.path
 import argparse
+import datetime
+import multiprocessing
 
-from . import dimacs
+from . import hashing
 
 
-def run(args: argparse.Namespace, log: logging.Logger) -> int:
-    for dimacsfile in args.dimacsfiles:
-        filename = os.path.basename(dimacsfile)
-        log.info("Start hash computation for {}".format(dimacsfile))
-        with open(dimacsfile) as fp:
-            hashvalue = dimacs.read_dimacs_file(fp, log)
+def read_chunks(fd, chunk_size=None):
+    """Read chunks from a file descriptor"""
+    if chunk_size is None:
+        import resource
+        chunk_size = resource.getpagesize()
+    while True:
+        data = fd.read(chunk_size)
+        if not data:
+            break
+        yield data
 
-        print('{:<40}  {}'.format(hashvalue, dimacsfile if args.fullpath else filename))
-    return 0
+
+def run(arg):
+    args, dimacsfile = arg
+    if dimacsfile.endswith('.gz'):
+        opener = gzip.open
+    else:
+        opener = open
+
+    with opener(dimacsfile, 'rb') as fd:
+        ignore_lines = b'c'
+        for prefix in (args.ignore or []):
+            ignore_lines += prefix.encode('ascii')
+        try:
+            gen = read_chunks(fd)
+            hashvalue = hashing.hash_dimacs(gen, ignore_lines=ignore_lines)
+        except hashing.DimacsSyntaxError as e:
+            raise hashing.DimacsSyntaxError("Error while processing {}".format(dimacsfile))
+
+    filename = os.path.basename(dimacsfile)
+    print('{:<45}  {}'.format(hashvalue, dimacsfile if args.fullpath else filename))
 
 
 def main():
-    parser = argparse.ArgumentParser(description='CNF analysis')
+    parser = argparse.ArgumentParser(description='CNF hashing')
     parser.add_argument('dimacsfiles', metavar='dimacsfiles', nargs='+',
                         help='filepath of DIMACS file')
+    parser.add_argument('--ignore', action='append',
+                        help='a prefix for lines that shall be ignored (like "c")')
     parser.add_argument('-f', '--fullpath', action='store_true',
                         help='the hash value will be followed by the filepath, not filename')
-    parser.add_argument('-l', '--loglevel', choices={'error', 'debug', 'info'}, default='error',
-                        help='filepath of DIMACS file')
 
     args = parser.parse_args()
-    log = logging.getLogger('cnfhash')
-    logging.basicConfig(
-        format='%(name)s.%(levelname) 5s - %(message)s',
-        level=logging.NOTSET
-    )
-    log.setLevel(getattr(logging, args.loglevel.upper()))
+    print('cnf-hash-py 1.0.0 {} {}'.format(datetime.datetime.utcnow().isoformat(), os.getcwd()))
+    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+        pool.map(run, zip([args] * len(args.dimacsfiles), args.dimacsfiles))
 
-    return run(args, log)
+if __name__ == '__main__':
+    main()

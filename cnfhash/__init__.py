@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 
 """
-    cnfhash
-    -------
+    cnf-hash
+    --------
 
     A library to hash CNF/DIMACS files.
 
-    (C) Lukas Prokop, 2015, Public Domain
+    (C) Lukas Prokop, 2016, Public Domain
 """
+
+from . import hashing
+
+hash_cnf = hashing.hash_cnf
+hash_dimacs = hashing.hash_dimacs
 
 __author__ = 'Lukas Prokop'
 __version_info__ = ('1', '0', '0')
