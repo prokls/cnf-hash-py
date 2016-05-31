@@ -19,7 +19,7 @@ CLAUSE_DELIM = b'0\n'
 ENCODING = 'ascii'
 
 
-def hash_cnf(ints: [int]):
+def hash_cnf(ints: [int], check_header=True):
     """Hash a given CNF defined as sequence of integers.
 
     `ints` is a sequence of integers:
@@ -36,13 +36,14 @@ def hash_cnf(ints: [int]):
     will be hashed correctly by calling::
 
         hash_cnf([3, 2, 1, -3, 0, -1, 2, 0])
+
+    If `check_header` is False, all checks related to nbvars and nbclauses
+    will be skipped.
     """
     sha1 = hashlib.sha1()
     clause_ended = False
     nbclauses = None
     clauses = 0
-
-    sha1.update(b"p cnf ")
 
     for i, lit in enumerate(ints):
         if i == 0:
@@ -65,7 +66,7 @@ def hash_cnf(ints: [int]):
             clause_ended = True
         else:
             clause_ended = False
-            if not (-nbvars <= lit <= nbvars):
+            if check_header and not (-nbvars <= lit <= nbvars):
                 tmpl = "Variable {} outside range ({})--({})".format(lit, -nbvars, nbvars)
                 raise ValueError(tmpl)
             sha1.update(str(lit).encode(ENCODING))
@@ -76,7 +77,7 @@ def hash_cnf(ints: [int]):
         raise ValueError(errmsg)
     if not clause_ended:
         raise ValueError("CNF must be terminated by zero")
-    if nbclauses != clauses:
+    if check_header and nbclauses != clauses:
         tmpl = "Invalid number of clauses, expected {}, got {} clauses"
         raise ValueError(tmpl.format(nbclauses, clauses))
 
