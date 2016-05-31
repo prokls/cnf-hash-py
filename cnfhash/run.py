@@ -70,7 +70,7 @@ def main():
                         help='the hash value will be followed by the filepath, not filename')
 
     args = parser.parse_args()
-    print('cnf-hash-py 1.1.0 {} {}'.format(datetime.datetime.utcnow().isoformat(), os.getcwd()))
+    print('cnf-hash-py 2.0.0 {} {}'.format(datetime.datetime.utcnow().isoformat(), os.getcwd()))
     with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
         pool.map(run, zip([args] * len(args.dimacsfiles), args.dimacsfiles))
 
