@@ -40,7 +40,7 @@ class CnfHashingTestsuite(unittest.TestCase):
             with open(filepath, 'rb') as fd:
                 try:
                     comp_hashvalue = cnfhash.hash_dimacs(fd)
-                    assert comp_hashvalue[0:5] == 'cnf1$'
+                    assert comp_hashvalue[0:5] == 'cnf2$'
                 except Exception as e:
                     print('Failure while processing testcase {}'.format(filepath), file=sys.stderr)
                     raise e

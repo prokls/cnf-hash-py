@@ -20,7 +20,7 @@ def readfile(fname):
 
 setup(
     name='cnfhash',
-    version='2.1.0',
+    version='2.1.1',
     url='http://lukas-prokop.at/proj/cnf-hash/',
     license='Public Domain',
     author='Lukas Prokop',
