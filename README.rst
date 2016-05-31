@@ -7,7 +7,7 @@ cnf-hash-py
 :license:       CC-0
 
 A python3 implementation to hash DIMACS CNF files.
-See `the technical report <http://lukas-prokop.at/proj/megosat/downloads/cnf-hash-1.0.0.pdf>`_ for more details.
+See `the technical report <http://lukas-prokop.at/proj/megosat/downloads/cnf-hash.pdf>`_ for more details.
 This implementation was pushed to `Python Package Index PyPI <https://pypi.python.org/pypi/cnfhash>`_.
 
 How to use
