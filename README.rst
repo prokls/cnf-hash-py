@@ -3,7 +3,7 @@ cnf-hash-py
 
 :author:        Lukas Prokop
 :date:          August 2015, May 2016
-:version:       1.0.0
+:version:       1.1.0
 :license:       CC-0
 
 A python3 implementation to hash DIMACS CNF files.
