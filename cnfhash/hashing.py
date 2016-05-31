@@ -81,7 +81,7 @@ def hash_cnf(ints: [int], check_header=True):
         tmpl = "Invalid number of clauses, expected {}, got {} clauses"
         raise ValueError(tmpl.format(nbclauses, clauses))
 
-    return 'cnf1$' + sha1.hexdigest()
+    return 'cnf2$' + sha1.hexdigest()
 
 
 def hash_decorator(f):
