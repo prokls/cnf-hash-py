@@ -73,7 +73,7 @@ def hash_cnf(ints: [int], check_header=True):
             sha1.update(LITERAL_DELIM)
 
     if not clause_ended:
-        yield 0
+        sha1.update(CLAUSE_DELIM)
         clauses += 1
     if nbclauses is None:
         errmsg = "Premature end, CNF must at least contain header values"
