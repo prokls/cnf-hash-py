@@ -96,8 +96,8 @@ The DIMACS parser uses OS' page size as default block size.
 A few constant values and the python runtime is also stored in memory.
 So for a python program, this implementation is very memory-friendly.
 
-The technical report shows that 45 DIMACS files summing up to 1~GB memory
-can be read in 2989~seconds. In terms of performance, the equivalent `Go
+The technical report shows that 45 DIMACS files summing up to 1 GB memory
+can be read in 2989 seconds. In terms of performance, the equivalent `Go
 implementation <http://github.com/prokls/cnf-hash-go/>`_ is recommended.
 
 Example
