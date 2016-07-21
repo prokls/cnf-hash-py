@@ -25,7 +25,11 @@ Then you can use the following API in python3::
 
     def read_blockwise(filepath):
         with open(filepath) as fd:
-            yield fd.read(4096)
+            while True:
+                buf = fd.read(4096)
+                if len(buf) == 0:
+                    break
+                yield buf
 
     reader = read_blockwise('test.cnf')
     print(cnfhash.hash_dimacs(reader))
